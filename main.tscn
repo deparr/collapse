@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dtqcblrr1orfh"]
 
 [ext_resource type="Script" uid="uid://dak2jnpkgy8xb" path="res://main.gd" id="1_ig7tw"]
-[ext_resource type="Texture2D" uid="uid://bdnjbm6klhcph" path="res://samples/SimpleMaze.png" id="2_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://dv4d8asl43a3q" path="res://samples/3Bricks.png" id="2_0xm2m"]
 
 [sub_resource type="Gradient" id="Gradient_0xm2m"]
 colors = PackedColorArray(0.156863, 0.156863, 0.156863, 1, 0.156863, 0.156863, 0.156863, 1)
@@ -40,6 +40,23 @@ grow_vertical = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer"]
 layout_mode = 2
 
+[node name="Orig" type="TextureRect" parent="CenterContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_0xm2m")
+
+[node name="Seed" type="Label" parent="CenterContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="NewSeed" type="Button" parent="CenterContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "New Seed"
+
 [node name="GenerateButton" type="Button" parent="CenterContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -47,20 +64,10 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 text = "generate"
 
-[node name="LoadingMsg" type="Label" parent="CenterContainer/HBoxContainer"]
+[node name="OutputGrid" type="GridContainer" parent="CenterContainer/HBoxContainer"]
 unique_name_in_owner = true
-visible = false
+custom_minimum_size = Vector2(144, 144)
 layout_mode = 2
-text = "<Loading...>"
-
-[node name="Output" type="TextureRect" parent="CenterContainer/HBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="TextureRect" type="TextureRect" parent="CenterContainer/HBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("2_0xm2m")
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
+columns = 3

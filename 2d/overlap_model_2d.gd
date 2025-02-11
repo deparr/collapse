@@ -26,6 +26,7 @@ func _init(name: String, N_: int, width_: int, height_: int, symmetry: int, peri
 		while k < colors.size():
 			if colors[k].is_equal_approx(color):
 				exists = true
+				break
 			k += 1
 
 		if not exists:
@@ -38,8 +39,8 @@ func _init(name: String, N_: int, width_: int, height_: int, symmetry: int, peri
 	var xmax = SX if periodic_input else SX - N + 1
 	var ymax = SY if periodic_input else SY - N + 1
 	var weight_list: Array[float] = []
-	for y in range(ymax):
-		for x in range(xmax):
+	for y in ymax:
+		for x in xmax:
 			var ps: Array[PackedByteArray] = []
 			ps.resize(8)
 
@@ -79,12 +80,11 @@ func _init(name: String, N_: int, width_: int, height_: int, symmetry: int, peri
 					l.append(t2)
 			propagator[d][t] = l
 
-
 static func pattern(f: Callable, size: int) -> PackedByteArray:
 	var result := PackedByteArray()
 	result.resize(size * size)
-	for y in range(size):
-		for x in range(size):
+	for y in size:
+		for x in size:
 			result[x + y * size] = f.call(x, y)
 	return result
 
@@ -117,9 +117,7 @@ static func hash(p: PackedByteArray, C: int) -> int:
 
 func image() -> Image:
 	var data := PackedByteArray()
-	print(colors, colors.size())
 	data.resize(width * height * 4)
-	# print(observed, observed.size())
 	var offset := 0
 	if observed[0] >= 0:
 		for y in height:
@@ -127,14 +125,10 @@ func image() -> Image:
 			for x in width:
 				var dx_ := 0 if x < width - N + 1 else N - 1
 				var idx := patterns[observed[x - dx_ + (y - dy_) * width]][dx_ + dy_ * N]
-				if idx >= colors.size():
-					print("(%d %d) | %d %d" % [x, y, dx_, dy_])
 				var c := colors[idx]
-				data.encode_u32(offset, c.to_argb32())
+				data.encode_u32(offset, c.to_abgr32())
 				offset += 4
 	else:
-		var zero_count := 0
-		var wave_count := 0
 		for i in wave.size():
 			var contributors_ := 0
 			var r := 0
@@ -157,20 +151,17 @@ func image() -> Image:
 						continue
 					for t in T:
 						if wave[s][t]:
-							wave_count += 1
 							contributors_ += 1
 							var argb := colors[patterns[t][dx_ + dy_ * N]]
 							r += argb.r8
 							g += argb.g8
 							b += argb.b8
-			# hack
+
+			# todo sometimes contributors_ is 0 ??
 			if contributors_ == 0:
 				contributors_ = 1
-				zero_count += 1
 			var pixel := 0xff000000 | ((r / contributors_) << 16) | ((g / contributors_) << 8) | b / contributors_;
 			data.encode_u32(offset, pixel)
 			offset += 4
-		print("zero ", zero_count)
-		print("true: ", wave_count , "false: ", wave.size() * wave[0].size() - zero_count)
 
 	return Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, data)

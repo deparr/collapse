@@ -100,9 +100,7 @@ func run(seed_: int, limit: int) -> bool:
 	if not wave:
 		self.setup()
 
-	count_wave()
 	self.clear()
-	count_wave()
 	var random = RandomNumberGenerator.new()
 	random.seed = seed_
 

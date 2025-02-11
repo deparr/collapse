@@ -3,27 +3,32 @@ extends Control
 var model: Model
 
 @onready var gen_btn: Button = %GenerateButton
-@onready var out: TextureRect = %Output
-@onready var loading_txt: Label = %LoadingMsg
-var seed_: int
+@onready var gen_seed: Button = %NewSeed
+@onready var seed_label: Label = %Seed
+@onready var image_grid: GridContainer = %OutputGrid
+var seed_: int:
+	set(v):
+		seed_label.text = " %d " % v
+		seed_ = v
 
-signal loading (vis: bool)
+func new_seed() -> void:
+	seed_ = int(Time.get_unix_time_from_system())
 
 func _ready() -> void:
 	gen_btn.pressed.connect(_on_gen_button)
-	seed_ = int(Time.get_unix_time_from_system())
-	loading_txt.visible = false
-	loading.connect(func(v): loading_txt.visible = v)
+	new_seed()
+	gen_seed.pressed.connect(new_seed)
+	for _i in 9:
+		image_grid.add_child(TextureRect.new())
+
 
 func _on_gen_button() -> void:
-	loading.emit(true)
-	model = OverlapModel2D.new("SimpleMaze.png", 3, 48, 48, 8, false, true, false, Model.Heuristic.Entropy)
+	model = OverlapModel2D.new("3Bricks.png", 3, 48, 48, 1, true, true, false, Model.Heuristic.Entropy)
 	var success = model.run(seed_, -1)
-	loading.emit(false)
 	if success:
-		print("success@!")
-		var img = model.image()
-		print(img.get_size())
-		out.texture = ImageTexture.create_from_image(img)
+		var img := model.image()
+		var tex := ImageTexture.create_from_image(img)
+		for out in image_grid.get_children():
+			out.texture = tex
 	else:
 		print("contradiction")
